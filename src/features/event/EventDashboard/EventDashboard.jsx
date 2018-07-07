@@ -8,7 +8,7 @@ const eventsData = [
   {
     id: '1',
     title: 'Using React Router',
-    date: '2018-09-27T11:00:00+00:00',
+    date: '2018-09-27',
     category: 'culture',
     description:
       'React Router is the standard routing library for React. It keeps your UI in sync with the URL. It has a simple API with powerful features like lazy code loading, dynamic route matching, and location transition handling built right in.',
@@ -32,7 +32,7 @@ const eventsData = [
   {
     id: '2',
     title: 'MySQL as back end for React app',
-    date: '2018-08-18T14:00:00+00:00',
+    date: '2018-08-18',
     category: 'drinks',
     description:
       'Node.js and MySQL is one of the important bindings used for web applications. MySQL is one of the most popular open source databases. There are a couple of Javascript drivers for operations with MySQL.',
@@ -56,7 +56,7 @@ const eventsData = [
   {
     id: '3',
     title: 'Blockchain technology in the pet food industry',
-    date: '2018-10-18T14:00:00+00:00',
+    date: '2018-10-18',
     category: 'drinks',
     description:
       'Blockchain provides proof of pet food ingredient claims and quality by essentially telling a brand’s story in a more credible way.',
@@ -84,12 +84,14 @@ const eventsData = [
 class EventDashboard extends Component {
       state = {
         events : eventsData,
-       isOpen: false
+        isOpen: false,
+        selectedEvent: null
       };
 
   handleFormOpen = () => {
     this.setState({
-     isOpen : true
+      selectedEvent: null,
+      isOpen : true
    });
   };
 
@@ -99,9 +101,35 @@ class EventDashboard extends Component {
    });
   };
 
+  handleUpdateEvent = (updatedEvent) => {
+    this.setState({
+      events: this.state.events.map(e => {
+        if(e.id === updatedEvent.id){
+          return Object.assign({}, updatedEvent);  //  sweet!!
+        } else {
+          return e;
+        }
+      }),
+      isOpen: false,
+      selectedEvent: null
+    });
+    // let tempEvents = this.state.events.map((e) => { return e.id !== updatedEvent.id ? e : null });
+    //   tempEvents.concat(updatedEvent);
+    //   this.setState({
+    //     events : tempEvents
+    //   });
+  };
+
+
+  handleOpenEvent = (eventToOpen) => () => {
+    this.setState({
+      selectedEvent: eventToOpen,
+      isOpen: true
+    });
+  };
 
   handleCreateEvent = (newEvent) =>{
-    newEvent.id = cuid();
+    newEvent.id = this.state.events.length + 1; //cuid();
     newEvent.hostPhotoURL = '/assets/user.png';
     const updatedEvents = [...this.state.events, newEvent];
     this.setState({
@@ -110,24 +138,37 @@ class EventDashboard extends Component {
     });
   };
 
+  handleDeleteEvent = (eventID) => () => {
+    const updatedEvents = this.state.events.filter(e => e.id !== eventID);
+    this.setState({
+      events: updatedEvents,
+      isOpen: false
+    });
+  };
 
   render() {
     const justForFun = 'maxxima software';
+    const {selectedEvent} = this.state;
     return (
       <div> 
          <h2>{justForFun}</h2>
        
       <Grid>    
         <Grid.Column width={10}>
-            <EventList events={this.state.events}/>  
+            <EventList deleteEvent = {this.handleDeleteEvent}
+                       onEventOpen={this.handleOpenEvent}
+                       events={this.state.events}/>
         </Grid.Column>       
         <Grid.Column width={6}>
 
           <Button onClick={this.handleFormOpen} positive content="Create event"/>
 
           {this.state.isOpen && <EventForm
+              selectedEvent = {selectedEvent}
+              updateEvent = {this.handleUpdateEvent}
               createEvent={this.handleCreateEvent}
-              handleCancel={this.handleCancel}/>
+              handleCancel={this.handleCancel}
+          />
           }
         </Grid.Column>
       </Grid>
