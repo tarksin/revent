@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { Grid, Button } from 'semantic-ui-react';
-import cuid from 'cuid';
-import EventList from '../EventList/EventList'
-import EventForm from '../EventForm/EventForm'
+import EventList from '../EventList/EventList';
+import EventForm from '../EventForm/EventForm';
+// import EventActivity from '../EventActivity/EventActivity';
 
 const eventsData = [
   {
     id: '1',
-    title: 'Using React Router',
+    title: 'Oxford Blockchain Conference',
     date: '2018-09-27',
     category: 'culture',
     description:
